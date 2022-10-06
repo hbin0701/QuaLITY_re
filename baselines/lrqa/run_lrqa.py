@@ -21,12 +21,12 @@ from transformers.file_utils import PaddingStrategy
 from transformers.tokenization_utils_base import TruncationStrategy
 from transformers.data.data_collator import default_data_collator
 
-import lrqa.tasks as tasks
-from lrqa.utils.hf_utils import parse_args, last_checkpoint_handling
-from lrqa.utils.io_utils import write_json, show_json
-from lrqa.utils.model_tweaks import adjust_tokenizer
-from lrqa.utils.tokenizer_utils import get_tokenized_dataset
-from lrqa.trainers import GenerationTrainer
+import utils.tasks as tasks
+from utils.hf_utils import parse_args, last_checkpoint_handling
+from utils.io_utils import write_json, show_json
+from utils.model_tweaks import adjust_tokenizer
+from utils.tokenizer_utils import get_tokenized_dataset
+from trainers import GenerationTrainer
 from typing import Dict, List
 
 
@@ -137,7 +137,6 @@ def main():
             config=config,
             cache_dir=model_args.cache_dir,
             revision=model_args.model_revision,
-            torch_dtype=torch_dtype,
             # gradient_checkpointing=training_args.gradient_checkpointing,
         )
         if "longformer" in model_args.model_name_or_path:

@@ -6,8 +6,7 @@ import numpy as np
 import datasets
 import transformers
 
-from lrqa.utils.io_utils import read_json, read_jsonl
-
+from .io_utils import read_json, read_jsonl
 
 class Task:
 

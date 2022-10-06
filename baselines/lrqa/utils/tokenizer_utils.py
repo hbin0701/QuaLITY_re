@@ -4,7 +4,7 @@ from transformers.file_utils import PaddingStrategy
 from transformers.tokenization_utils_base import TruncationStrategy
 from typing import Dict
 
-import lrqa.tasks as tasks
+from .tasks import Task
 
 
 def tokenize_examples_for_enc_dec_model(examples, tokenizer, max_seq_length: int,
@@ -105,7 +105,7 @@ def tokenize_examples_for_mc_lm_model(examples, tokenizer, max_seq_length: int,
     return result
 
 
-def get_tokenized_dataset(task: tasks.Task, dataset_dict,
+def get_tokenized_dataset(task: Task, dataset_dict,
                           tokenizer,
                           max_seq_length: int,
                           padding_strategy: PaddingStrategy,
