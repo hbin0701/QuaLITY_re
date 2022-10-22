@@ -1,6 +1,5 @@
-import pyutils.io as io
 from bs4 import BeautifulSoup
-
+import jsonlines
 
 def old_strip_html(text):
     soup = BeautifulSoup("".join(text))
@@ -35,7 +34,7 @@ def format_nice_text(raw_html):
 
 
 def process_file(input_path, output_path, strip_html=False):
-    data = io.read_jsonl(input_path)
+    data = jsonlines.open(input_path)
     out = []
     for row in data:
         i = 1
@@ -56,4 +55,6 @@ def process_file(input_path, output_path, strip_html=False):
                 "label": row[f"question{i}_gold_label"] - 1,
             })
             i += 1
-    io.write_jsonl(out, output_path)
+
+    with jsonlines.open(output_path, mode='w') as writer:
+        writer.write(out)

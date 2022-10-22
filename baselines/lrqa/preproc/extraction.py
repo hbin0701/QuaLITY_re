@@ -2,8 +2,8 @@ from typing import Iterable
 import torch
 from rouge_score import rouge_scorer
 import spacy
-import pyutils.io as io
-import pyutils.display as display
+import jsonlines
+from tqdm.auto import tqdm
 from bs4 import BeautifulSoup
 import numpy as np
 import nltk
@@ -182,39 +182,24 @@ def get_top_sentences(query: str, sent_data: list, max_word_count: int, scorer: 
 
 def process_file(input_path, output_path, scorer: SimpleScorer, query_type="question", max_word_count=300,
                  verbose=False, clean_text=True):
-    data = io.read_jsonl(input_path)
+    data = jsonlines.open(input_path)
     out = []
-    for row in display.maybe_tqdm(data, verbose=verbose):
+    for row in tqdm(data):
         sent_data = get_sent_data(row["article"], clean_text=clean_text)
-        i = 1
-        while True:
-            if f"question{i}" not in row:
-                break
-            if query_type == "question":
-                query = row[f"question{i}"].strip()
-            elif query_type == "oracle_answer":
-                query = row[f"question{i}option{row[f'question{i}_gold_label']}"].strip()
-            elif query_type == "oracle_question_answer":
-                query = (
-                    row[f"question{i}"].strip()
-                    + " " + row[f"question{i}option{row['question{i}_gold_label']}"].strip()
-                )
-            else:
-                raise KeyError(query_type)
-            shortened_article = get_top_sentences(
-                query=query,
-                sent_data=sent_data,
-                max_word_count=max_word_count,
-                scorer=scorer,
-            )
-            out.append({
-                "context": shortened_article,
-                "query": " " + row[f"question{i}"].strip(),
-                "option_0": " " + row[f"question{i}option1"].strip(),
-                "option_1": " " + row[f"question{i}option2"].strip(),
-                "option_2": " " + row[f"question{i}option3"].strip(),
-                "option_3": " " + row[f"question{i}option4"].strip(),
-                "label": row[f"question{i}_gold_label"] - 1,
-            })
-            i += 1
-    io.write_jsonl(out, output_path)
+        for question in row['questions']:
+          temp_dict = {}
+          temp_dict['query'] = question['question']
+          temp_dict['label'] = question['gold_label'] - 1
+          temp_dict['context'] = get_top_sentences(
+              query=temp_dict['query'],
+              sent_data=sent_data,
+              max_word_count=max_word_count,
+              scorer=scorer,
+          )
+          for i, option in enumerate(question['options']):
+            temp_dict[f"option_{i}"] = option
+          
+          out.append(temp_dict)
+        
+    with jsonlines.open(output_path, mode='w') as writer:
+        writer.write(out)
