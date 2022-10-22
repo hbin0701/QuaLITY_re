@@ -1,6 +1,6 @@
 ## 🚀 Devising Specialized Model for Long-Text RC 
-> This repo is for Fall 2022, **CS495(BK): Individual Study** [In Progress]
-> **objective**: establish SOTA model on QuALITY Dataset
+> This repo is for Fall 2022, **CS495(BK): Individual Study** [In Progress] \
+> **objective**: establish SOTA model on QuALITY Dataset \
 For original work, refer to [QuALITY](https://github.com/nyu-mll/quality).
 
 ### Directory
